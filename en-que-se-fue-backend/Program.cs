@@ -20,8 +20,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(AngularCorsPolicy, policy =>
     {
+        var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>()
+            ?? new[] { "http://localhost:4200", "https://enquesefue.netlify.app" };
+
         policy
-            .WithOrigins("http://localhost:4200")
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -40,7 +43,11 @@ builder.Services.AddHttpClient<IAnalisisInteligenteBusiness, AnalisisInteligente
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseCors(AngularCorsPolicy);
 app.MapGet("/", () => new
 {
@@ -50,7 +57,8 @@ app.MapGet("/", () => new
         "/api/auth/login",
         "/api/gastos",
         "/api/categorias",
-        "/api/resumenmensual"
+        "/api/resumenmensual",
+        "/api/analisis/dashboard"
     }
 });
 app.MapControllers();
@@ -66,7 +74,7 @@ static string GetPostgresConnectionString(IConfiguration configuration)
 
     if (string.IsNullOrWhiteSpace(databaseUrl))
     {
-        throw new InvalidOperationException("No se encontrÃƒÂ³ una cadena de conexiÃƒÂ³n para PostgreSQL.");
+        throw new InvalidOperationException("No se encontró una cadena de conexión para PostgreSQL.");
     }
 
     if (!Uri.TryCreate(databaseUrl, UriKind.Absolute, out var uri) || uri.Scheme is not ("postgres" or "postgresql"))
