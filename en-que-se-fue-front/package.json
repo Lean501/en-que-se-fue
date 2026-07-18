@@ -25,5 +25,8 @@
                             "@angular/cli":  "^18.2.0",
                             "@angular/compiler-cli":  "^18.2.0",
                             "typescript":  "~5.5.4"
-                        }
+                        },
+    "engines":  {
+                    "node":  "\u003e=20 \u003c23"
+                }
 }
