@@ -1,0 +1,220 @@
+<section class="head">
+  <div>
+    <h1 class="page-title">Planificación</h1>
+    <p class="page-sub">Metas, límites, recurrentes y reportes para controlar el mes</p>
+  </div>
+  <div class="head-actions">
+    <div class="period-picker" [class.open]="selectorPeriodoAbierto()">
+      <button type="button" class="input period-trigger" (click)="alternarSelectorPeriodo()" aria-label="Elegir mes y anio">
+        <span>{{ periodoLabel() }}</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />
+        </svg>
+      </button>
+      @if (selectorPeriodoAbierto()) {
+        <div class="period-popover">
+          <div class="year-control">
+            <button type="button" class="year-step" (click)="moverAnioSelector(-1)" aria-label="Anio anterior">‹</button>
+            <input class="input year-input" type="text" inputmode="numeric" maxlength="4" [value]="anioSelector()" (input)="actualizarAnioSelector($any($event.target))" />
+            <button type="button" class="year-step" (click)="moverAnioSelector(1)" aria-label="Anio siguiente">›</button>
+          </div>
+          <div class="month-grid">
+            @for (mes of meses; track mes; let i = $index) {
+              <button
+                type="button"
+                class="month-option"
+                [class.active]="esPeriodoSeleccionado(i + 1)"
+                (click)="seleccionarPeriodo(i + 1)"
+              >
+                {{ mes.slice(0, 3) }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+@if (cargando()) {
+  <div class="card empty">Cargando planificación...</div>
+} @else {
+  <div class="kpis">
+    <div class="card kpi">
+      <span>Ingresos del mes</span>
+      <strong>{{ ingresosPeriodo() | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+      <small>{{ periodoLabel() }}</small>
+    </div>
+    <div class="card kpi">
+      <span>Gastos del mes</span>
+      <strong>{{ totalGastado() | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+      @if (variacionMensual() !== null) {
+        <small>{{ variacionMensual()! | number: '1.0-0' }}% vs mes anterior</small>
+      } @else {
+        <small>Sin comparación anterior</small>
+      }
+    </div>
+    <div class="card kpi">
+      <span>Meta de ahorro</span>
+      <strong>{{ metaPeriodo() | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+      <small>{{ progresoMeta() | number: '1.0-0' }}% cubierto</small>
+    </div>
+    <div class="card kpi">
+      <span>Disponible tras meta</span>
+      <strong>{{ disponibleConMeta() | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+      <small>Después de gastos y ahorro</small>
+    </div>
+  </div>
+
+  <div class="grid">
+    <article class="card panel">
+      <h2>Meta de ahorro</h2>
+      <form class="inline-form" [formGroup]="metaForm" (ngSubmit)="guardarMeta()">
+        <input class="input" type="text" inputmode="decimal" maxlength="18" [value]="metaDisplay()" (input)="actualizarMeta($any($event.target).value)" />
+        <button class="btn btn-primary" type="submit">Guardar meta</button>
+      </form>
+      <div class="track">
+        <span [style.width.%]="progresoMeta()"></span>
+      </div>
+    </article>
+
+    <article class="card panel">
+      <h2>Alertas inteligentes</h2>
+      @if (alertasInteligentes().length === 0) {
+        <p class="muted">No hay alertas importantes para este período.</p>
+      } @else {
+        <div class="alerts">
+          @for (alerta of alertasInteligentes(); track alerta) {
+            <p>{{ alerta }}</p>
+          }
+        </div>
+      }
+    </article>
+
+    <article class="card panel wide">
+      <h2>Alertas personalizadas</h2>
+      <form class="alert-form" [formGroup]="alertaForm" (ngSubmit)="guardarAlertaPersonalizada()">
+        <input class="input" formControlName="nombre" maxlength="60" placeholder="Nombre de la alerta" />
+        <input
+          class="input"
+          type="text"
+          inputmode="decimal"
+          maxlength="18"
+          [value]="alertaMontoDisplay()"
+          (input)="actualizarMontoAlerta($any($event.target).value)"
+          (blur)="alertaForm.controls.montoMaximo.markAsTouched()"
+          placeholder="Monto máximo"
+        />
+        <button class="btn btn-primary" type="submit">Agregar</button>
+      </form>
+      @if (alertasPersonalizadas().length === 0) {
+        <p class="muted">No hay alertas personalizadas.</p>
+      } @else {
+        <div class="custom-alerts">
+          @for (alerta of alertasPersonalizadas(); track alerta.id) {
+            <div>
+              <span>{{ alerta.nombre }} · {{ alerta.montoMaximo | number: '1.0-0' }}</span>
+              <button type="button" class="mini danger" (click)="eliminarAlertaPersonalizada(alerta.id)">Eliminar</button>
+            </div>
+          }
+        </div>
+      }
+    </article>
+
+    <article class="card panel wide">
+      <h2>Presupuesto por categoría</h2>
+      <form class="limit-form" [formGroup]="limiteForm" (ngSubmit)="guardarLimite()">
+        <select class="input" formControlName="categoriaId">
+          @for (categoria of categorias(); track categoria.id) {
+            <option [value]="categoria.id">{{ categoria.nombre }}</option>
+          }
+        </select>
+        <input class="input" type="text" inputmode="decimal" maxlength="18" [value]="limiteDisplay()" (input)="actualizarLimite($any($event.target).value)" placeholder="Límite" />
+        <button class="btn btn-primary" type="submit">Guardar Presupuesto</button>
+      </form>
+      @if (limitesDetalle().length === 0) {
+        <p class="muted">Todavía no cargaste limites por categoria.</p>
+      } @else {
+        <div class="limit-list">
+          @for (limite of limitesDetalle(); track limite.id) {
+            <div class="limit-row">
+              <div>
+                <strong><i [style.backgroundColor]="limite.categoriaColor"></i>{{ limite.categoriaNombre }}</strong>
+                <span>{{ limite.gastado | currency: 'USD' : 'symbol' : '1.0-0' }} de {{ limite.monto | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+              </div>
+              <div class="track"><span [class.over]="limite.restante < 0" [style.width.%]="limite.porcentaje"></span></div>
+              <button type="button" class="mini danger" (click)="eliminarLimite(limite.id)">Eliminar</button>
+            </div>
+          }
+        </div>
+      }
+    </article>
+
+    <article class="card panel wide">
+      <h2>Gastos Fijos</h2>
+      <p class="panel-help">Guarda gastos que se repiten. Cuando quieras sumarlos al mes seleccionado, crea el gasto desde acá.</p>
+      <form class="recurrent-form" [formGroup]="recurrenteForm" (ngSubmit)="guardarRecurrente()">
+        <input class="input" formControlName="descripcion" maxlength="80" placeholder="Descripción" />
+        <input class="input" type="text" inputmode="decimal" maxlength="18" [value]="recurrenteDisplay()" (input)="actualizarRecurrenteMonto($any($event.target).value)" placeholder="Monto" />
+        <select class="input" formControlName="categoriaId">
+          @for (categoria of categorias(); track categoria.id) {
+            <option [value]="categoria.id">{{ categoria.nombre }}</option>
+          }
+        </select>
+        <select class="input" formControlName="metodoPago">
+          @for (metodo of metodos; track metodo.value) {
+            <option [value]="metodo.value">{{ metodo.label }}</option>
+          }
+        </select>
+        <button class="btn btn-primary" type="submit">Agregar</button>
+      </form>
+      @if (recurrentes().length === 0) {
+        <p class="muted">Todavía no cargaste gastos recurrentes.</p>
+      } @else {
+        <div class="recurrent-list">
+          @for (recurrente of recurrentes(); track recurrente.id) {
+            <div class="recurrent-row" [class.inactive]="!recurrente.activo">
+              <div class="recurrent-info">
+                <strong>{{ recurrente.descripcion }}</strong>
+                <span>{{ categoriaNombre(recurrente.categoriaId) }} · {{ recurrente.monto | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+              </div>
+              <div class="row-actions">
+                <button type="button" class="mini" (click)="toggleRecurrente(recurrente)">{{ recurrente.activo ? 'Pausar' : 'Activar' }}</button>
+                <button type="button" class="mini" [disabled]="recurrenteGenerado(recurrente) || !recurrente.activo || generandoId() === recurrente.id" (click)="generarRecurrente(recurrente)">
+                  {{ recurrenteGenerado(recurrente) ? 'Ya creado' : 'Crear gasto del mes' }}
+                </button>
+                <button type="button" class="mini danger" (click)="eliminarRecurrente(recurrente.id)">Eliminar</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </article>
+
+    <article class="card panel wide">
+      <h2>Plan del mes</h2>
+      <p class="panel-help">Mira cómo se reparte el dinero del periodo y cuánto queda después de gastos y ahorro.</p>
+      <div class="plan-list">
+        @for (item of planDelMes(); track item.label) {
+          <div
+            class="plan-row"
+            [class.fixed]="item.tone === 'fixed'"
+            [class.variable]="item.tone === 'variable'"
+            [class.saving]="item.tone === 'saving'"
+            [class.available]="item.tone === 'available'"
+            [class.over]="item.tone === 'over'"
+          >
+            <div class="plan-info">
+              <strong>{{ item.label }}</strong>
+              <span>{{ item.detalle }}</span>
+            </div>
+            <div class="plan-track" aria-hidden="true">
+              <span [style.width.%]="item.porcentaje"></span>
+            </div>
+            <strong class="plan-amount">{{ item.monto | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+          </div>
+        }
+      </div>
+    </article>
+  </div>
+}

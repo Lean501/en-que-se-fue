@@ -1,0 +1,237 @@
+<section class="head">
+  <div>
+    <h1 class="page-title">Gastos</h1>
+    <p class="page-sub">Registra y administra tus gastos</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrirCrear()" [disabled]="cargando()">
+    + Nuevo gasto
+  </button>
+</section>
+
+<div class="toolbar card">
+  <input
+    type="search"
+    class="input"
+    placeholder="Buscar por descripción..."
+    [value]="filtroTexto()"
+    (input)="filtroTexto.set($any($event.target).value)"
+  />
+  <select class="input select" [value]="filtroCategoria()" (change)="filtroCategoria.set($any($event.target).value)">
+    <option value="">Todas las categorías</option>
+    @for (c of categorias(); track c.id) {
+      <option [value]="c.id">{{ c.nombre }}</option>
+    }
+  </select>
+  <div class="total-chip">
+    Total: <strong>{{ total() | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+  </div>
+</div>
+
+<div class="view-tools">
+  <div class="view-switch card">
+    <button type="button" [class.active]="vista() === 'lista'" (click)="vista.set('lista')">Lista</button>
+    <button type="button" [class.active]="vista() === 'calendario'" (click)="vista.set('calendario')">Calendario</button>
+  </div>
+  <button type="button" class="reset-order card" [disabled]="!ordenActivo()" (click)="restablecerOrden()">
+    Restablecer orden
+  </button>
+</div>
+
+@if (cargando()) {
+  <div class="card empty">Cargando gastos...</div>
+} @else if (vista() === 'calendario') {
+  <section class="card calendar-panel">
+    <div class="calendar-head">
+      <button type="button" class="calendar-nav" (click)="moverCalendario(-1)" aria-label="Mes anterior">‹</button>
+      <div>
+        <h2>{{ calendario().label }}</h2>
+        <span>{{ calendario().totalGastos }} gastos</span>
+      </div>
+      <button type="button" class="calendar-nav" (click)="moverCalendario(1)" aria-label="Mes siguiente">›</button>
+    </div>
+    <div class="calendar-weekdays">
+      <span>Dom</span>
+      <span>Lun</span>
+      <span>Mar</span>
+      <span>Mié</span>
+      <span>Jue</span>
+      <span>Vie</span>
+      <span>Sab</span>
+    </div>
+    <div class="calendar-grid">
+      @for (dia of calendario().celdas; track dia.fecha || $index) {
+        <article class="calendar-day" [class.empty-day]="dia.dia === null">
+          @if (dia.dia !== null) {
+            <div class="day-head">
+              <strong>{{ dia.dia }}</strong>
+              @if (dia.total > 0) {
+                <span>{{ dia.total | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+              }
+            </div>
+            <div class="day-list">
+              @for (gasto of dia.gastos; track gasto.id) {
+                <div class="day-expense">
+                  <i [style.backgroundColor]="gasto.categoriaColor"></i>
+                  <span>{{ gasto.descripcion }}</span>
+                  <strong>{{ gasto.monto | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+                </div>
+              }
+            </div>
+          }
+        </article>
+      }
+    </div>
+  </section>
+} @else if (gastosFiltrados().length === 0) {
+  <div class="card empty">
+    <p>No hay gastos que coincidan.</p>
+    <button type="button" class="btn btn-primary" (click)="abrirCrear()">Registrar el primero</button>
+  </div>
+} @else {
+  <div class="card table-wrap">
+    <table class="table">
+      <colgroup>
+        <col class="col-desc" />
+        <col class="col-category" />
+        <col class="col-method" />
+        <col class="col-type" />
+        <col class="col-date" />
+        <col class="col-amount" />
+        <col class="col-actions" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th><button type="button" class="sort-btn" (click)="ordenarPor('descripcion')">Descripción <span>{{ indicadorOrden('descripcion') }}</span></button></th>
+          <th><button type="button" class="sort-btn" (click)="ordenarPor('categoria')">Categoría <span>{{ indicadorOrden('categoria') }}</span></button></th>
+          <th><button type="button" class="sort-btn" (click)="ordenarPor('metodo')">Método <span>{{ indicadorOrden('metodo') }}</span></button></th>
+          <th><button type="button" class="sort-btn" (click)="ordenarPor('tipo')">Tipo <span>{{ indicadorOrden('tipo') }}</span></button></th>
+          <th><button type="button" class="sort-btn" (click)="ordenarPor('fecha')">Fecha <span>{{ indicadorOrden('fecha') }}</span></button></th>
+          <th class="right"><button type="button" class="sort-btn right-sort" (click)="ordenarPor('monto')">Monto <span>{{ indicadorOrden('monto') }}</span></button></th>
+          <th class="right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (g of gastosFiltrados(); track g.id) {
+          <tr>
+            <td data-label="Descripción">
+              <span class="desc">{{ g.descripcion }}</span>
+              @if (notaVisible(g.notas)) { <span class="notas">{{ notaVisible(g.notas) }}</span> }
+            </td>
+            <td data-label="Categoría">
+              <span
+                class="badge cat"
+                [style.backgroundColor]="fondoCategoria(g.categoriaColor)"
+                [style.borderColor]="bordeCategoria(g.categoriaColor)"
+                [style.color]="textoCategoria(g.categoriaColor)"
+              >
+                {{ g.categoriaNombre }}
+              </span>
+            </td>
+            <td data-label="Método"><span class="metodo">{{ g.metodoPago }}</span></td>
+            <td data-label="Tipo">
+              <span class="tipo-chip" [class.fixed]="g.tipoMonto === 'fijo'">
+                {{ g.tipoMonto === 'fijo' ? 'Fijo' : 'Variable' }}
+              </span>
+            </td>
+            <td data-label="Fecha">{{ g.fecha | date: 'dd MMM yyyy' }}</td>
+            <td data-label="Monto" class="right amount">{{ g.monto | currency: 'USD' : 'symbol' : '1.0-2' }}</td>
+            <td data-label="Acciones" class="right">
+              @if (borrandoId() === g.id) {
+                <span class="confirm">
+                  <button type="button" class="btn btn-danger sm" (click)="eliminar(g.id)">Sí, borrar</button>
+                  <button type="button" class="btn btn-secondary sm" (click)="cancelarBorrar()">No</button>
+                </span>
+              } @else {
+                <span class="actions">
+                  <button type="button" class="icon-btn" (click)="abrirEditar(g)" aria-label="Editar">Editar</button>
+                  <button type="button" class="icon-btn danger" (click)="confirmarBorrar(g.id)" aria-label="Eliminar">Eliminar</button>
+                </span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+<!-- Modal formulario -->
+@if (modalAbierto()) {
+  <div class="overlay" (click)="cerrarModal()">
+    <div class="modal card" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">{{ editandoId() ? 'Editar gasto' : 'Nuevo gasto' }}</h2>
+
+      <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        <div class="field">
+          <label class="label" for="descripcion">Descripción</label>
+          <input id="descripcion" class="input" formControlName="descripcion" maxlength="80" [class.invalid]="f.descripcion.invalid && f.descripcion.touched" />
+          @if (f.descripcion.invalid && f.descripcion.touched) {
+            <p class="field-error">Ingresa una descripción de 2 a 80 caracteres.</p>
+          }
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label class="label" for="monto">Monto</label>
+            <input
+              id="monto"
+              type="text"
+              inputmode="decimal"
+              maxlength="18"
+              class="input"
+              [value]="montoDisplay()"
+              (input)="actualizarMonto($any($event.target).value)"
+              (blur)="f.monto.markAsTouched()"
+              [class.invalid]="f.monto.invalid && f.monto.touched"
+            />
+            @if (f.monto.invalid && f.monto.touched) {
+              <p class="field-error">El monto debe ser mayor a 0 y menor a 999,999,999,999.99.</p>
+            }
+          </div>
+          <div class="field">
+            <label class="label" for="fecha">Fecha</label>
+            <input id="fecha" type="date" class="input" formControlName="fecha" [class.invalid]="f.fecha.invalid && f.fecha.touched" />
+            @if (f.fecha.invalid && f.fecha.touched) {
+              <p class="field-error">La fecha es obligatoria.</p>
+            }
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label class="label" for="categoriaId">Categoría</label>
+            <select id="categoriaId" class="input select" formControlName="categoriaId" [class.invalid]="f.categoriaId.invalid && f.categoriaId.touched">
+              <option value="" disabled>Selecciona...</option>
+              @for (c of categorias(); track c.id) {
+                <option [value]="c.id">{{ c.nombre }}</option>
+              }
+            </select>
+            @if (f.categoriaId.invalid && f.categoriaId.touched) {
+              <p class="field-error">Selecciona una categoría.</p>
+            }
+          </div>
+          <div class="field">
+            <label class="label" for="metodoPago">Método de pago</label>
+            <select id="metodoPago" class="input select" formControlName="metodoPago">
+              @for (m of metodos; track m.value) {
+                <option [value]="m.value">{{ m.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="notas">Notas (opcional)</label>
+          <textarea id="notas" rows="4" class="input notes-input" formControlName="notas" maxlength="250"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

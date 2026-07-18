@@ -1,0 +1,117 @@
+<section class="head">
+  <div>
+    <h1 class="page-title">Presupuestos</h1>
+    <p class="page-sub">Carga montos mensuales y controla cuánto queda disponible</p>
+  </div>
+</section>
+
+<form class="card form" [class.editing-form]="editandoId()" [formGroup]="form" (ngSubmit)="guardar()">
+  <select class="input select" formControlName="mes">
+    @for (mes of meses; track mes; let i = $index) {
+      <option [value]="i + 1">{{ mes }}</option>
+    }
+  </select>
+  <input
+    class="input"
+    type="text"
+    inputmode="numeric"
+    maxlength="4"
+    [value]="form.controls.anio.value"
+    (input)="actualizarAnio($any($event.target))"
+    (blur)="form.controls.anio.markAsTouched()"
+  />
+  <input
+    #montoInput
+    class="input"
+    [class.editing-input]="editandoId()"
+    type="text"
+    inputmode="decimal"
+    maxlength="18"
+    placeholder="Monto mensual"
+    [value]="montoDisplay()"
+    (keydown)="permitirSoloNumeros($event)"
+    (paste)="pegarSoloNumeros($event)"
+    (input)="actualizarMonto($any($event.target).value)"
+    (blur)="form.controls.monto.markAsTouched()"
+  />
+  <input
+    class="input origin-input"
+    type="text"
+    maxlength="30"
+    placeholder="Origen de los fondos"
+    formControlName="origenFondos"
+  />
+  <button class="btn btn-primary" type="submit" [disabled]="guardando()">
+    {{ guardando() ? 'Guardando...' : (editandoId() ? 'Actualizar presupuesto' : 'Agregar presupuesto') }}
+  </button>
+  @if (editandoId()) {
+    <button class="btn btn-secondary" type="button" (click)="cancelarEdicion()">Cancelar</button>
+  }
+</form>
+
+<div class="card filters">
+  <h2 class="filter-title">Filtrar</h2>
+  <select class="input filter-mode" [value]="filtroPeriodo()" (change)="filtroPeriodo.set($any($event.target).value)">
+    <option value="todos">Todos los presupuestos</option>
+    <option value="mes">Filtrar por mes</option>
+  </select>
+  <div class="filter-extra" [class.open]="filtroPeriodo() === 'mes'">
+    <select class="input" [value]="filtroMes()" (change)="actualizarFiltroMes($any($event.target).value)">
+      @for (mes of meses; track mes; let i = $index) {
+        <option [value]="i + 1">{{ mes }}</option>
+      }
+    </select>
+    <input
+      class="input"
+      type="text"
+      inputmode="numeric"
+      maxlength="4"
+      [value]="filtroAnio()"
+      (input)="actualizarFiltroAnio($any($event.target))"
+    />
+  </div>
+</div>
+
+@if (cargando()) {
+  <div class="card empty">Cargando presupuestos...</div>
+} @else if (filas().length === 0) {
+  <div class="card empty">Todavía no cargaste presupuestos.</div>
+} @else {
+  <div class="grid">
+    @for (fila of filas(); track fila.periodo) {
+      <article class="card budget">
+        <div class="budget-head">
+          <strong>{{ fila.label }}</strong>
+          <span [class.negative]="fila.restante < 0">{{ fila.restante | currency: 'USD' : 'symbol' : '1.0-0' }} restantes</span>
+        </div>
+        <div class="budget-values">
+          <span>Total presupuestado: {{ fila.monto | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+          <span>Gastado: {{ fila.gastado | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+        </div>
+        <div class="fund-list">
+          <span class="fund-title">Entradas de fondos</span>
+          @for (presupuesto of fila.presupuestos; track presupuesto.id) {
+            <div class="fund-item">
+              <div>
+                <strong>{{ presupuesto.origenFondos || 'Sin origen cargado' }}</strong>
+                <span>{{ presupuesto.monto | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+              </div>
+              <div class="fund-actions">
+                <button type="button" class="mini" (click)="editar(presupuesto)">Editar</button>
+                @if (eliminandoId() === presupuesto.id) {
+                  <button type="button" class="mini danger" (click)="eliminar(presupuesto.id)">Confirmar</button>
+                  <button type="button" class="mini" (click)="cancelarEliminar()">Cancelar</button>
+                } @else {
+                  <button type="button" class="mini danger" (click)="confirmarEliminar(presupuesto.id)">Eliminar</button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+        <div class="track">
+          <div class="fill" [class.over]="fila.restante < 0" [style.width.%]="fila.porcentaje"></div>
+        </div>
+      </article>
+    }
+  </div>
+}

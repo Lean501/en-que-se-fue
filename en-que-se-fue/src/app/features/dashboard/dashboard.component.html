@@ -1,0 +1,197 @@
+<section class="head">
+  <div>
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-sub">Vista general de gastos, presupuesto y alertas</p>
+  </div>
+  <button
+    type="button"
+    class="theme-toggle"
+    (click)="alternarTema()"
+    [attr.aria-label]="modoOscuro() ? 'Activar modo claro' : 'Activar modo oscuro'"
+    [attr.title]="modoOscuro() ? 'Modo claro' : 'Modo oscuro'"
+  >
+    @if (modoOscuro()) {
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2"></path>
+        <path d="M12 20v2"></path>
+        <path d="m4.93 4.93 1.41 1.41"></path>
+        <path d="m17.66 17.66 1.41 1.41"></path>
+        <path d="M2 12h2"></path>
+        <path d="M20 12h2"></path>
+        <path d="m6.34 17.66-1.41 1.41"></path>
+        <path d="m19.07 4.93-1.41 1.41"></path>
+      </svg>
+    } @else {
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3a6 6 0 0 0 9 7.5A9 9 0 1 1 12 3Z"></path>
+      </svg>
+    }
+  </button>
+</section>
+
+@if (cargando()) {
+  <div class="card empty">Cargando dashboard...</div>
+} @else {
+  <div class="kpis">
+    <div class="card kpi">
+      <span class="kpi-label">Total gastado este mes</span>
+      <strong class="kpi-value">{{ totalMes() | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+      @if (comparacion() !== null) {
+        <span class="kpi-note">{{ comparacion()! | number: '1.0-0' }}% vs. mes anterior</span>
+      } @else {
+        <span class="kpi-note">Sin comparación anterior</span>
+      }
+    </div>
+    <div class="card kpi">
+      <span class="kpi-label">Montos fijos</span>
+      <strong class="kpi-value">{{ totalFijoMes() | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+      <span class="kpi-note">{{ totalVariableMes() | currency: 'USD' : 'symbol' : '1.0-0' }} variables</span>
+    </div>
+    <div class="card kpi">
+      <span class="kpi-label">Gasto más alto</span>
+      @if (gastoMasAlto(); as gasto) {
+        <strong class="kpi-value">{{ gasto.monto | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+        <span class="kpi-note">{{ gasto.descripcion }}</span>
+      } @else {
+        <strong class="kpi-value">{{ 0 | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+        <span class="kpi-note">Sin datos</span>
+      }
+    </div>
+    <div class="card kpi">
+      <span class="kpi-label">Categoría principal</span>
+      <strong class="kpi-value text">{{ categoriaTop()?.nombre ?? 'Sin datos' }}</strong>
+      <span class="kpi-note">{{ (categoriaTop()?.total ?? 0) | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+    </div>
+    <div class="card kpi">
+      <span class="kpi-label">Presupuesto restante</span>
+      <strong class="kpi-value" [class.negative]="saldoDisponible() < 0">{{ saldoDisponible() | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+      <span class="kpi-note">{{ cantidadGastos() }} gastos este mes</span>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <article class="card panel ai-panel">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Análisis inteligente</h2>
+          <span class="ai-source">{{ analisis()?.usandoIa ? 'Ollama local' : 'Resumen local' }}</span>
+        </div>
+        <button type="button" class="btn btn-secondary ai-refresh" (click)="cargarAnalisis()" [disabled]="cargandoAnalisis()">
+          {{ cargandoAnalisis() ? 'Analizando...' : 'Actualizar' }}
+        </button>
+      </div>
+      @if (cargandoAnalisis() && !analisis()) {
+        <p class="muted">Generando análisis...</p>
+      } @else {
+        @if (analisis(); as item) {
+          <p class="ai-summary">{{ item.resumen }}</p>
+          @if (item.recomendaciones.length > 0) {
+            <ul class="ai-list">
+              @for (recomendacion of item.recomendaciones; track recomendacion) {
+                <li>{{ recomendacion }}</li>
+              }
+            </ul>
+          }
+        } @else {
+          <p class="muted">Todavía no hay análisis disponible.</p>
+        }
+      }
+    </article>
+
+    <article class="card panel">
+      <h2 class="panel-title">Gráfico de torta por categoria</h2>
+      @if (categoriasChart().length === 0) {
+        <p class="muted">Sin gastos este mes.</p>
+      } @else {
+        <div class="pie-layout">
+          <div class="pie" [style.background]="pieGradient()"></div>
+          <div class="pie-legend">
+            @for (categoria of categoriasChart(); track categoria.id) {
+              <span><i [style.backgroundColor]="categoria.color"></i>{{ categoria.nombre }} · {{ categoria.porcentaje | number: '1.0-0' }}%</span>
+            }
+          </div>
+        </div>
+      }
+    </article>
+
+    <article class="card panel">
+      <h2 class="panel-title">Línea de evolución mensual</h2>
+      @if (gastosPorMes().length === 0) {
+        <p class="muted">Sin gastos cargados.</p>
+      } @else {
+        <div class="line-chart">
+          @for (item of gastosPorMes(); track item.periodo) {
+            <div class="line-point" [style.height.%]="(item.total / totalMaximoMes()) * 100">
+              <span>{{ item.total | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+            </div>
+          }
+        </div>
+        <div class="line-labels">
+          @for (item of gastosPorMes(); track item.periodo) {
+            <span>{{ item.periodo.slice(5) }}</span>
+          }
+        </div>
+      }
+    </article>
+
+    <article class="card panel">
+      <h2 class="panel-title">Barras por método de pago</h2>
+      @if (gastosPorMetodo().length === 0) {
+        <p class="muted">Sin gastos este mes.</p>
+      } @else {
+        <div class="chart-bars">
+          @for (item of gastosPorMetodo(); track item.metodo) {
+            <div class="chart-bar-row">
+              <span>{{ item.metodo }}</span>
+              <div class="chart-track"><div class="chart-fill alt" [style.width.%]="(item.total / totalMaximoMetodo()) * 100"></div></div>
+              <strong>{{ item.total | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+            </div>
+          }
+        </div>
+      }
+    </article>
+
+    <article class="card panel">
+      <h2 class="panel-title">Montos fijos y variables</h2>
+      @if (totalMes() === 0) {
+        <p class="muted">Sin gastos este mes.</p>
+      } @else {
+        <div class="chart-bars">
+          @for (item of gastosPorTipoMonto(); track item.tipo) {
+            <div class="chart-bar-row">
+              <span>{{ item.tipo }}</span>
+              <div class="chart-track">
+                <div class="chart-fill" [class.alt]="item.tipo === 'Variables'" [style.width.%]="(item.total / totalMaximoTipoMonto()) * 100"></div>
+              </div>
+              <strong>{{ item.total | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+            </div>
+          }
+        </div>
+      }
+    </article>
+
+  </div>
+
+  <div class="grid-2 latest-only">
+    <article class="card panel">
+      <h2 class="panel-title">Últimos 5 gastos</h2>
+      @if (ultimosGastos().length === 0) {
+        <p class="muted">Todavía no hay gastos cargados.</p>
+      } @else {
+        <div class="list">
+          @for (gasto of ultimosGastos(); track gasto.id) {
+            <div class="list-row">
+              <div>
+                <strong>{{ gasto.descripcion }}</strong>
+                <span>{{ gasto.fecha | date: 'dd MMM yyyy' }} · {{ gasto.metodoPago }} · {{ gasto.tipoMonto === 'fijo' ? 'fijo' : 'variable' }}</span>
+              </div>
+              <strong>{{ gasto.monto | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+            </div>
+          }
+        </div>
+      }
+    </article>
+
+  </div>
+}

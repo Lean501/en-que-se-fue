@@ -1,0 +1,218 @@
+.login-page {
+  --background: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #f1f5f4;
+  --foreground: #101828;
+  --muted: #667085;
+  --border: #d9e1e7;
+  --primary: #1f6f5c;
+  --primary-soft: #e2f1ec;
+  --danger: #d92d20;
+  --danger-soft: #fee4e2;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(420px, 1fr) minmax(420px, 1fr);
+  background: var(--surface);
+  color: var(--foreground);
+}
+
+.login-panel {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 48px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background-color: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 10px 22px rgba(31, 111, 92, 0.22);
+}
+.brand-name {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.form-block {
+  width: min(100%, 430px);
+  margin: auto;
+}
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+}
+.title {
+  font-size: 34px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.subtitle {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 0 0 34px;
+}
+
+.alert {
+  background-color: var(--danger-soft);
+  color: var(--danger);
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  margin-bottom: 18px;
+}
+
+.field {
+  margin-bottom: 22px;
+}
+.floating-label {
+  display: inline-block;
+  padding: 0 8px;
+  margin: 0 0 -10px 14px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+.input-shell {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.input-shell:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+.input-shell.invalid {
+  border-color: var(--danger);
+}
+.input-shell input {
+  width: 100%;
+  height: 58px;
+  border: 0;
+  outline: 0;
+  padding: 16px 50px 14px 18px;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 15px;
+}
+.input-shell input::placeholder {
+  color: color-mix(in srgb, var(--muted) 72%, transparent);
+}
+.input-shell > svg,
+.toggle svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.input-shell > svg {
+  position: absolute;
+  right: 17px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+}
+.toggle {
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+}
+.toggle:hover {
+  background: var(--surface-2);
+  color: var(--primary);
+}
+
+.submit {
+  width: 100%;
+  height: 58px;
+  margin-top: 4px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgba(31, 111, 92, 0.22);
+}
+
+.auth-link {
+  margin: 24px 0 0;
+  color: var(--muted);
+  text-align: center;
+  font-size: 14px;
+}
+.auth-link a {
+  color: var(--primary);
+  font-weight: 800;
+  text-decoration: none;
+}
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+.visual-panel {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000 url("/assets/login-hero.png") center / cover no-repeat;
+}
+
+@media (max-width: 900px) {
+  .login-page {
+    grid-template-columns: 1fr;
+    background:
+      linear-gradient(rgba(246, 247, 249, 0.88), rgba(246, 247, 249, 0.96)),
+      #9ccafa;
+  }
+  .login-panel {
+    min-height: 100vh;
+    padding: 28px;
+  }
+  .form-block {
+    margin: 52px auto auto;
+  }
+  .visual-panel {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .login-panel {
+    padding: 22px;
+  }
+  .title {
+    font-size: 29px;
+  }
+  .input-shell input,
+  .submit {
+    height: 54px;
+  }
+}

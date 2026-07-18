@@ -1,0 +1,163 @@
+<section class="head">
+  <div>
+    <h1 class="page-title">Resumen de gastos</h1>
+    <p class="page-sub">Análisis de tus gastos por periodo, categoria y metodo de pago</p>
+  </div>
+  <div class="controls">
+    <select class="input select" [value]="filtroFecha()" (change)="cambiarFiltroFecha($any($event.target).value)">
+      @for (filtro of filtrosFecha; track filtro.value) {
+        <option [value]="filtro.value">{{ filtro.label }}</option>
+      }
+    </select>
+    @if (filtroFecha() === 'personalizado') {
+      <input class="input date-input" type="date" [value]="fechaDesde()" (input)="fechaDesde.set($any($event.target).value)" />
+      <input class="input date-input" type="date" [value]="fechaHasta()" (input)="fechaHasta.set($any($event.target).value)" />
+    }
+    <button type="button" class="btn btn-primary" (click)="generar()" [disabled]="analizando()">
+      {{ analizando() ? 'Analizando...' : 'Regenerar' }}
+    </button>
+  </div>
+</section>
+
+@if (analizando()) {
+  <div class="card ai-loading">
+    <span class="spinner"></span>
+    <div>
+      <strong>Generando resumen de gastos...</strong>
+      <p>Calculando totales, gráficos y recomendaciones.</p>
+    </div>
+  </div>
+} @else if (resumen()) {
+  @if (resumen()!; as r) {
+    @if (r.cantidadGastos === 0) {
+      <div class="card empty">No se registraron gastos para el filtro seleccionado.</div>
+    } @else {
+      <div class="kpis">
+        <div class="card kpi">
+          <span class="kpi-label">Total gastado</span>
+          <span class="kpi-value">{{ r.totalGastado | currency: 'USD' : 'symbol' : '1.0-2' }}</span>
+          <span class="kpi-trend muted">{{ r.periodoLabel }}</span>
+        </div>
+        <div class="card kpi">
+          <span class="kpi-label">Cantidad de gastos</span>
+          <span class="kpi-value">{{ r.cantidadGastos }}</span>
+          <span class="kpi-trend muted">operaciónes registradas</span>
+        </div>
+        <div class="card kpi">
+          <span class="kpi-label">Promedio por gasto</span>
+          <span class="kpi-value">{{ r.promedioPorGasto | currency: 'USD' : 'symbol' : '1.0-2' }}</span>
+          <span class="kpi-trend muted">por operación</span>
+        </div>
+        <div class="card kpi">
+          <span class="kpi-label">Categoría top</span>
+          <span class="kpi-value sm">{{ r.categoriaTop?.nombre ?? 'Sin datos' }}</span>
+          @if (r.categoriaTop) {
+            <span class="kpi-trend muted">{{ r.categoriaTop.porcentaje | number: '1.0-0' }}% del total</span>
+          }
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <article class="card panel">
+          <h2 class="panel-title">Gráfico de torta por categoria</h2>
+          <div class="pie-layout">
+            <div class="pie" [style.background]="pieGradient(r)"></div>
+            <div class="pie-legend">
+              @for (c of r.categorias; track c.categoriaId) {
+                <span><i [style.backgroundColor]="c.color"></i>{{ c.nombre }} · {{ c.porcentaje | number: '1.0-0' }}%</span>
+              }
+            </div>
+          </div>
+        </article>
+
+        <article class="card panel">
+          <h2 class="panel-title">Distribución por categoria</h2>
+          <div class="bars">
+            @for (c of r.categorias; track c.categoriaId) {
+              <div class="bar-row">
+                <div class="bar-info">
+                  <span class="bar-name">
+                    <span class="dot" [style.backgroundColor]="c.color"></span>
+                    {{ c.nombre }}
+                  </span>
+                  <span class="bar-amount">{{ c.total | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+                </div>
+                <div class="bar-track">
+                  <div class="bar-fill" [style.width.%]="c.porcentaje" [style.backgroundColor]="c.color"></div>
+                </div>
+                <span class="bar-pct">{{ c.porcentaje | number: '1.0-0' }}%</span>
+              </div>
+            }
+          </div>
+        </article>
+      </div>
+
+      <div class="grid-2">
+        <article class="card panel">
+          <h2 class="panel-title">Barra de gastos por mes</h2>
+          <div class="chart-bars">
+            @for (item of gastosPorMes(); track item.periodo) {
+              <div class="chart-bar-row">
+                <span>{{ item.periodo }}</span>
+                <div class="chart-track"><div class="chart-fill" [style.width.%]="(item.total / totalMaximoMes()) * 100"></div></div>
+                <strong>{{ item.total | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+              </div>
+            }
+          </div>
+        </article>
+
+        <article class="card panel">
+          <h2 class="panel-title">Línea de evolución mensual</h2>
+          <div class="line-chart">
+            @for (item of gastosPorMes(); track item.periodo) {
+              <div class="line-point" [style.height.%]="(item.total / totalMaximoMes()) * 100">
+                <span>{{ item.total | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+              </div>
+            }
+          </div>
+          <div class="line-labels">
+            @for (item of gastosPorMes(); track item.periodo) {
+              <span>{{ item.periodo.slice(5) }}</span>
+            }
+          </div>
+        </article>
+      </div>
+
+      <div class="grid-2">
+        <article class="card panel">
+          <h2 class="panel-title">Barras por método de pago</h2>
+          <div class="chart-bars">
+            @for (item of gastosPorMetodo(); track item.metodo) {
+              <div class="chart-bar-row">
+                <span>{{ item.metodo }}</span>
+                <div class="chart-track"><div class="chart-fill alt" [style.width.%]="(item.total / totalMaximoMetodo()) * 100"></div></div>
+                <strong>{{ item.total | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+              </div>
+            }
+          </div>
+        </article>
+
+        <article class="card panel ai-panel">
+          <h2 class="panel-title">Observaciones</h2>
+          <ul class="ai-list">
+            @for (obs of r.observaciones; track obs) {
+              <li>{{ obs }}</li>
+            }
+          </ul>
+        </article>
+      </div>
+
+      <article class="card panel recs">
+        <h2 class="panel-title">Recomendaciones</h2>
+        <div class="rec-grid">
+          @for (rec of r.recomendaciones; track rec) {
+            <div class="rec-item">
+              <span class="rec-check">OK</span>
+              <p>{{ rec }}</p>
+            </div>
+          }
+        </div>
+      </article>
+    }
+  }
+}

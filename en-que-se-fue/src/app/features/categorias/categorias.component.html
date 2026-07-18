@@ -1,0 +1,236 @@
+<section class="head">
+  <div>
+    <h1 class="page-title">Categorías</h1>
+    <p class="page-sub">Organiza tus gastos por categoria y detecta tus hábitos de consumo</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrirCrear()">+ Nueva categoría</button>
+</section>
+
+@if (errorAccion()) {
+  <div class="alert" role="alert">{{ errorAccion() }}</div>
+}
+
+@if (cargando()) {
+  <div class="card empty">Cargando categorías...</div>
+} @else if (categorias().length === 0) {
+  <div class="card empty">
+    <p>Aún no tienes categorias.</p>
+    <button type="button" class="btn btn-primary" (click)="abrirCrear()">Crear la primera</button>
+  </div>
+} @else {
+  <section class="dashboard" aria-label="Estadísticas de categorías">
+    <div class="stats-grid">
+      <article class="card stat-card">
+        <span class="stat-label">Total categorizado</span>
+        <strong class="stat-value">{{ totalGastado() | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+        <span class="stat-note">{{ gastos().length }} gastos registrados</span>
+      </article>
+
+      <article class="card stat-card">
+        <span class="stat-label">Categoría más usada</span>
+        <strong class="stat-value">{{ categoriaMasUsada()?.nombre ?? 'Sin datos' }}</strong>
+        <span class="stat-note">{{ categoriaMasUsada()?.cantidad ?? 0 }} movimientos</span>
+      </article>
+
+      <article class="card stat-card">
+        <span class="stat-label">Mayor gasto acumulado</span>
+        <strong class="stat-value">{{ categoriaMayorGasto()?.nombre ?? 'Sin datos' }}</strong>
+        <span class="stat-note">{{ (categoriaMayorGasto()?.total ?? 0) | currency: 'USD' : 'symbol' : '1.0-0' }}</span>
+      </article>
+
+      <article class="card stat-card">
+        <span class="stat-label">Gasto promedio</span>
+        <strong class="stat-value">{{ promedioPorGasto() | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+        <span class="stat-note">{{ categoriasSinUso() }} categorías sin uso</span>
+      </article>
+    </div>
+
+    <div class="insights-grid">
+      <article class="card panel">
+        <div class="panel-head">
+          <h2>Uso por categoría</h2>
+          <span>{{ categoriasUsadas().length }} activas</span>
+        </div>
+
+        @if (categoriasUsadas().length === 0) {
+          <p class="panel-empty">Todavía no hay gastos asignados a categorias.</p>
+        } @else {
+          <div class="ranking">
+            @for (c of categoriasEstadisticas().slice(0, 5); track c.id) {
+              <div class="rank-row">
+                <div class="rank-info">
+                  <span class="dot" [style.backgroundColor]="c.color"></span>
+                  <div>
+                    <strong>{{ c.nombre }}</strong>
+                    <span>{{ c.cantidad }} gastos - {{ c.porcentaje }}%</span>
+                  </div>
+                </div>
+                <strong class="rank-amount">{{ c.total | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+                <div class="bar" aria-hidden="true">
+                  <span [style.width.%]="c.porcentaje" [style.backgroundColor]="c.color"></span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </article>
+
+      <article class="card panel">
+        <div class="panel-head">
+          <h2>Lectura rápida</h2>
+          <span>Resumen</span>
+        </div>
+
+        @if (gastoMasAlto()) {
+          <div class="highlight" [class.with-tip]="categoriasSinUso() > 0">
+            <span class="highlight-label">Gasto más alto</span>
+            <strong>{{ gastoMasAlto()?.descripcion }}</strong>
+            <span
+              class="badge"
+              [style.backgroundColor]="gastoMasAlto()?.categoriaColor + '22'"
+              [style.color]="gastoMasAlto()?.categoriaColor"
+            >
+              {{ gastoMasAlto()?.categoriaNombre }}
+            </span>
+            <strong class="highlight-amount">{{ gastoMasAlto()?.monto | currency: 'USD' : 'symbol' : '1.0-0' }}</strong>
+          </div>
+        } @else {
+          <p class="panel-empty">Cuando registres gastos, acá vas a ver los principales patrones.</p>
+        }
+
+        @if (categoriasSinUso() > 0) {
+          <div class="tip">
+            <strong>Para complementar:</strong>
+            revisa las categorías sin uso y unifica las que se superponen para mantener el análisis limpio.
+          </div>
+        }
+      </article>
+    </div>
+  </section>
+
+  <div class="carousel">
+    <button type="button" class="carousel-btn prev" aria-label="Ver categorías anteriores" (click)="moverCarrusel(categoriasCarrusel, 'izquierda')">
+      ‹
+    </button>
+
+    <div class="grid" #categoriasCarrusel>
+      @for (c of categorias(); track c.id) {
+        <article class="card cat-card">
+          <div class="cat-top">
+            <span class="dot" [style.backgroundColor]="c.color"></span>
+            <h3 class="cat-name">{{ c.nombre }}</h3>
+          </div>
+          @if (c.descripcion) {
+            <p class="cat-desc">{{ c.descripcion }}</p>
+          } @else {
+            <p class="cat-desc muted">Sin descripción</p>
+          }
+
+          <div class="cat-actions">
+            @if (borrandoId() === c.id) {
+              <span class="confirm">
+                <button type="button" class="btn btn-danger sm" (click)="eliminar(c.id)">Sí, borrar</button>
+                <button type="button" class="btn btn-secondary sm" (click)="cancelarBorrar()">No</button>
+              </span>
+            } @else {
+              <button type="button" class="icon-btn" (click)="abrirEditar(c)">Editar</button>
+              <button type="button" class="icon-btn danger" (click)="confirmarBorrar(c.id)">Eliminar</button>
+            }
+          </div>
+        </article>
+      }
+    </div>
+
+    <button type="button" class="carousel-btn next" aria-label="Ver más categorías" (click)="moverCarrusel(categoriasCarrusel, 'derecha')">
+      ›
+    </button>
+  </div>
+}
+
+<!-- Modal -->
+@if (modalAbierto()) {
+  <div class="overlay" (click)="cerrarModal()">
+    <div class="modal card" (click)="$event.stopPropagation()">
+      <h2 class="modal-title">{{ editandoId() ? 'Editar categoría' : 'Nueva categoría' }}</h2>
+
+      <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        <div class="field">
+          <label class="label" for="nombre">Nombre</label>
+          <input
+            id="nombre"
+            class="input"
+            formControlName="nombre"
+            maxlength="30"
+            [class.invalid]="f.nombre.invalid && f.nombre.touched"
+          />
+          @if (f.nombre.invalid && f.nombre.touched) {
+            <p class="field-error">Ingresa un nombre de 2 a 30 caracteres.</p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="label">Color</label>
+          <div class="color-builder">
+            <div class="color-preview" [style.backgroundColor]="colorPersonalizado()" aria-hidden="true"></div>
+            <div class="color-controls">
+              <input
+                class="input hex-input"
+                type="text"
+                maxlength="7"
+                [value]="colorPersonalizado()"
+                (input)="actualizarColorHex($any($event.target).value)"
+                aria-label="Color hexadecimal"
+              />
+              <button type="button" class="btn btn-secondary add-color-btn" (click)="agregarColorPersonalizado()" [disabled]="limiteColoresAlcanzado() && !colores().includes(colorPersonalizado())">Agregar color</button>
+            </div>
+            <div class="slider-field hue">
+              <span>Tono</span>
+              <input type="range" min="0" max="359" [value]="colorHue()" (input)="colorHue.set(+$any($event.target).value); actualizarColorHsl()" />
+            </div>
+            <div class="slider-field">
+              <span>Intensidad</span>
+              <input type="range" min="0" max="100" [value]="colorSaturation()" (input)="colorSaturation.set(+$any($event.target).value); actualizarColorHsl()" />
+            </div>
+            <div class="slider-field">
+              <span>Luz</span>
+              <input type="range" min="10" max="90" [value]="colorLightness()" (input)="colorLightness.set(+$any($event.target).value); actualizarColorHsl()" />
+            </div>
+          </div>
+          <div class="color-actions">
+            <span>{{ colores().length }}/18 colores</span>
+            @if (editandoColor()) {
+              <button type="button" class="mini-action save" (click)="guardarColorEditado()" [disabled]="!colorSeleccionadoEsEditable()">Guardar color</button>
+            } @else {
+              <button type="button" class="mini-action" (click)="editarColorSeleccionado()" [disabled]="!colorSeleccionadoEsEditable()">Editar seleccionado</button>
+            }
+            <button type="button" class="mini-action danger" (click)="eliminarColorSeleccionado()" [disabled]="!colorSeleccionadoEsEditable() || colores().length <= 1">Eliminar</button>
+          </div>
+          <div class="color-grid">
+            @for (color of colores(); track color) {
+              <button
+                type="button"
+                class="color-swatch"
+                [class.selected]="f.color.value === color"
+                [style.backgroundColor]="color"
+                (click)="seleccionarColor(color)"
+                [attr.aria-label]="'Color ' + color"
+              ></button>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="descripcion">Descripción (opcional)</label>
+          <textarea id="descripcion" rows="4" class="input descripcion-input" formControlName="descripcion"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

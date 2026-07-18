@@ -1,0 +1,347 @@
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.page-title {
+  font-size: 22px;
+}
+.page-sub,
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 4px;
+}
+.head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.period-picker {
+  position: relative;
+  width: 210px;
+}
+.period-trigger {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+}
+.period-trigger svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.period-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(420px, calc(100vw - 48px));
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  z-index: 30;
+}
+.year-control {
+  display: grid;
+  grid-template-columns: 38px 1fr 38px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.year-step {
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: 22px;
+  line-height: 1;
+}
+.year-step:hover {
+  background: var(--surface-2);
+}
+.year-input {
+  text-align: center;
+  font-weight: 700;
+}
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.month-option {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 6px;
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 600;
+}
+.month-option:hover {
+  background: var(--surface-2);
+}
+.month-option.active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+.empty {
+  padding: 40px;
+  text-align: center;
+}
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.kpi {
+  padding: 18px;
+  display: grid;
+  gap: 5px;
+}
+.kpi span,
+.kpi small {
+  color: var(--muted);
+  font-size: 13px;
+}
+.kpi strong {
+  font-size: 24px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.panel {
+  padding: 20px;
+}
+.panel h2 {
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+.panel-help {
+  color: var(--muted);
+  font-size: 13px;
+  margin: -6px 0 14px;
+}
+.wide {
+  grid-column: 1 / -1;
+}
+.inline-form,
+.limit-form,
+.recurrent-form {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.inline-form {
+  grid-template-columns: 1fr auto;
+}
+.limit-form {
+  grid-template-columns: minmax(220px, 1fr) minmax(160px, 220px) auto;
+}
+.recurrent-form {
+  grid-template-columns: 1.4fr 160px 1fr 160px auto;
+}
+.alert-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(150px, 220px) auto;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.track {
+  height: 9px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.track span {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  background: var(--primary);
+}
+.track span.over {
+  background: var(--danger);
+}
+.alerts {
+  display: grid;
+  gap: 10px;
+}
+.alerts p {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background-color: var(--warning-soft);
+  color: var(--warning);
+}
+.limit-list,
+.recurrent-list,
+.custom-alerts,
+.plan-list {
+  display: grid;
+  gap: 10px;
+}
+.custom-alerts div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.limit-row,
+.recurrent-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1.4fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.limit-row strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.limit-row i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.limit-row span,
+.recurrent-row span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.plan-row {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.9fr) minmax(220px, 1.6fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.plan-info {
+  display: grid;
+  gap: 3px;
+}
+.plan-info span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.plan-track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.plan-track span {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  border-radius: inherit;
+  background: var(--primary);
+}
+.plan-row.fixed .plan-track span {
+  background: #64748b;
+}
+.plan-row.variable .plan-track span {
+  background: #2563eb;
+}
+.plan-row.saving .plan-track span {
+  background: #9333ea;
+}
+.plan-row.over .plan-track span {
+  background: var(--danger);
+}
+.plan-amount {
+  text-align: right;
+}
+.plan-row.available .plan-amount {
+  color: var(--primary);
+}
+.plan-row.over .plan-amount {
+  color: var(--danger);
+}
+.recurrent-info {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.recurrent-info strong,
+.recurrent-info span {
+  overflow-wrap: anywhere;
+}
+.recurrent-info span {
+  display: block;
+  line-height: 1.35;
+}
+.recurrent-row {
+  grid-template-columns: minmax(220px, 1fr) auto;
+}
+.recurrent-row.inactive {
+  opacity: 0.62;
+}
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mini {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 600;
+}
+.mini.danger {
+  color: var(--danger);
+  border-color: var(--danger-soft);
+}
+.mini:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+@media (max-width: 980px) {
+  .head,
+  .head-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .grid,
+  .inline-form,
+  .limit-form,
+  .recurrent-form,
+  .alert-form,
+  .limit-row,
+  .recurrent-row,
+  .plan-row {
+    grid-template-columns: 1fr;
+  }
+  .period-picker {
+    width: 100%;
+  }
+  .row-actions {
+    justify-content: flex-start;
+  }
+}
