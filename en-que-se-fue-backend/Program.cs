@@ -74,7 +74,7 @@ static string GetPostgresConnectionString(IConfiguration configuration)
 
     if (string.IsNullOrWhiteSpace(databaseUrl))
     {
-        throw new InvalidOperationException("No se encontrÃƒÂ³ una cadena de conexiÃƒÂ³n para PostgreSQL.");
+        throw new InvalidOperationException("No se encontro una cadena de conexion para PostgreSQL.");
     }
 
     if (!Uri.TryCreate(databaseUrl, UriKind.Absolute, out var uri) || uri.Scheme is not ("postgres" or "postgresql"))
