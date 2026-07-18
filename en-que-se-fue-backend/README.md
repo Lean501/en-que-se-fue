@@ -107,7 +107,7 @@ El backend detecta esas variables y las convierte automÃ¡ticamente al formato 
 Desde una terminal, ingresar a la carpeta del backend:
 
 ```bash
-cd backend
+cd en-que-se-fue-front-backend
 ```
 
 Restaurar las dependencias:
@@ -134,7 +134,7 @@ http://localhost:53368
 Desde otra terminal, ingresar a la carpeta del frontend:
 
 ```bash
-cd en-que-se-fue
+cd en-que-se-fue-front
 ```
 
 Instalar las dependencias:
@@ -317,4 +317,5 @@ Si el usuario no existe en la base de datos, puede crearse desde la opciÃ³n `C
 - Ollama es opcional.
 - Si Ollama no estÃ¡ disponible, la aplicaciÃ³n continÃºa funcionando con anÃ¡lisis local.
 - Las carpetas `bin`, `obj`, `dist`, `.angular`, `node_modules` y `artifacts` no deben subirse a GitHub.
+
 
