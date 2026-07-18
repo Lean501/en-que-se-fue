@@ -74,7 +74,7 @@ static string GetPostgresConnectionString(IConfiguration configuration)
 
     if (string.IsNullOrWhiteSpace(databaseUrl))
     {
-        throw new InvalidOperationException("No se encontró una cadena de conexión para PostgreSQL.");
+        throw new InvalidOperationException("No se encontrÃ³ una cadena de conexiÃ³n para PostgreSQL.");
     }
 
     if (!Uri.TryCreate(databaseUrl, UriKind.Absolute, out var uri) || uri.Scheme is not ("postgres" or "postgresql"))
@@ -86,5 +86,7 @@ static string GetPostgresConnectionString(IConfiguration configuration)
     var username = Uri.UnescapeDataString(userInfo.ElementAtOrDefault(0) ?? string.Empty);
     var password = Uri.UnescapeDataString(userInfo.ElementAtOrDefault(1) ?? string.Empty);
 
-    return $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+    $port = uri.Port > 0 ? uri.Port : 5432;
+
+    return $"Host={uri.Host};Port={$port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 }
