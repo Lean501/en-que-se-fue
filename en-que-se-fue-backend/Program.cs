@@ -59,13 +59,14 @@ app.Run();
 
 static string GetPostgresConnectionString(IConfiguration configuration)
 {
-    var databaseUrl = configuration["NETLIFY_DATABASE_URL"]
+    var databaseUrl = configuration["NETLIFY_DB_URL"]
+        ?? configuration["NETLIFY_DATABASE_URL"]
         ?? configuration["DATABASE_URL"]
         ?? configuration.GetConnectionString("DefaultConnection");
 
     if (string.IsNullOrWhiteSpace(databaseUrl))
     {
-        throw new InvalidOperationException("No se encontró una cadena de conexión para PostgreSQL.");
+        throw new InvalidOperationException("No se encontrÃ³ una cadena de conexiÃ³n para PostgreSQL.");
     }
 
     if (!Uri.TryCreate(databaseUrl, UriKind.Absolute, out var uri) || uri.Scheme is not ("postgres" or "postgresql"))
