@@ -1,0 +1,9 @@
+﻿[build]
+  base = "en-que-se-fue-front"
+  command = "npm run build"
+  publish = "dist/en-que-se-fue/browser"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
