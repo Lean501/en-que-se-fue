@@ -389,6 +389,23 @@ export class PlanificacionComponent implements OnInit {
     this.alertaForm.controls.montoMaximo.markAsDirty()
   }
 
+  permitirSoloNumeros(event: KeyboardEvent): void {
+    const teclasPermitidas = ["Backspace", "Delete", "Tab", "Enter", "Escape", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"]
+
+    if (event.ctrlKey || event.metaKey || teclasPermitidas.includes(event.key)) return
+    if (/^\d$/.test(event.key)) return
+
+    event.preventDefault()
+  }
+
+  permitirPegadoNumerico(event: ClipboardEvent): void {
+    const text = event.clipboardData?.getData("text") ?? ""
+
+    if (!/^\d+$/.test(text)) {
+      event.preventDefault()
+    }
+  }
+
   categoriaNombre(id: string): string {
     return this.categorias().find((categoria) => categoria.id === id)?.nombre ?? "Sin categoría"
   }

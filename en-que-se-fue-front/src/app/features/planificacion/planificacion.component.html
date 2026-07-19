@@ -98,9 +98,11 @@
         <input
           class="input"
           type="text"
-          inputmode="decimal"
+          inputmode="numeric"
           maxlength="18"
           [value]="alertaMontoDisplay()"
+          (keydown)="permitirSoloNumeros($event)"
+          (paste)="permitirPegadoNumerico($event)"
           (input)="actualizarMontoAlerta($any($event.target).value)"
           (blur)="alertaForm.controls.montoMaximo.markAsTouched()"
           placeholder="Monto máximo"
@@ -129,7 +131,7 @@
             <option [value]="categoria.id">{{ categoria.nombre }}</option>
           }
         </select>
-        <input class="input" type="text" inputmode="decimal" maxlength="18" [value]="limiteDisplay()" (input)="actualizarLimite($any($event.target).value)" placeholder="Límite" />
+        <input class="input" type="text" inputmode="numeric" maxlength="18" [value]="limiteDisplay()" (keydown)="permitirSoloNumeros($event)" (paste)="permitirPegadoNumerico($event)" (input)="actualizarLimite($any($event.target).value)" placeholder="Límite" />
         <button class="btn btn-primary" type="submit">Guardar Presupuesto</button>
       </form>
       @if (limitesDetalle().length === 0) {
@@ -155,7 +157,7 @@
       <p class="panel-help">Guarda gastos que se repiten. Cuando quieras sumarlos al mes seleccionado, crea el gasto desde acá.</p>
       <form class="recurrent-form" [formGroup]="recurrenteForm" (ngSubmit)="guardarRecurrente()">
         <input class="input" formControlName="descripcion" maxlength="80" placeholder="Descripción" />
-        <input class="input" type="text" inputmode="decimal" maxlength="18" [value]="recurrenteDisplay()" (input)="actualizarRecurrenteMonto($any($event.target).value)" placeholder="Monto" />
+        <input class="input" type="text" inputmode="numeric" maxlength="18" [value]="recurrenteDisplay()" (keydown)="permitirSoloNumeros($event)" (paste)="permitirPegadoNumerico($event)" (input)="actualizarRecurrenteMonto($any($event.target).value)" placeholder="Monto" />
         <select class="input" formControlName="categoriaId">
           @for (categoria of categorias(); track categoria.id) {
             <option [value]="categoria.id">{{ categoria.nombre }}</option>
