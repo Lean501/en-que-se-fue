@@ -1,14 +1,14 @@
-# ¿En Qué Se Fue?
+# Â¿En QuÃ© Se Fue?
 
-¿En Qué Se Fue? es una aplicación web para administrar gastos personales, presupuestos, categorías, alertas y planificación mensual. El objetivo del proyecto es ayudar al usuario a registrar sus movimientos, entender en qué se fue su dinero y tomar mejores decisiones sobre sus gastos.
+Â¿En QuÃ© Se Fue? es una aplicaciÃ³n web para administrar gastos personales, presupuestos, categorÃ­as, alertas y planificaciÃ³n mensual. El objetivo del proyecto es ayudar al usuario a registrar sus movimientos, entender en quÃ© se fue su dinero y tomar mejores decisiones sobre sus gastos.
 
-La aplicación cuenta con autenticación de usuarios, por lo que cada persona puede tener sus propios datos separados dentro del sistema.
+La aplicaciÃ³n cuenta con autenticaciÃ³n de usuarios, por lo que cada persona puede tener sus propios datos separados dentro del sistema.
 
-## Descripción General
+## DescripciÃ³n General
 
-El sistema permite registrar gastos, organizarlos por categorías, cargar presupuestos mensuales, definir metas de ahorro y revisar un dashboard con información resumida de la situación financiera del usuario.
+El sistema permite registrar gastos, organizarlos por categorÃ­as, cargar presupuestos mensuales, definir metas de ahorro y revisar un dashboard con informaciÃ³n resumida de la situaciÃ³n financiera del usuario.
 
-También incluye una sección de análisis inteligente. En entorno local puede utilizar Ollama como IA local. En producción web, si Ollama no está disponible, el backend genera un análisis local de respaldo para mantener la aplicación funcional sin depender de servicios pagos.
+TambiÃ©n incluye una secciÃ³n de anÃ¡lisis inteligente. En entorno local puede utilizar Ollama como IA local. En producciÃ³n web, si Ollama no estÃ¡ disponible, el backend genera un anÃ¡lisis local de respaldo para mantener la aplicaciÃ³n funcional sin depender de servicios pagos.
 
 ## URLs del Proyecto
 
@@ -16,7 +16,7 @@ También incluye una sección de análisis inteligente. En entorno local puede u
 - Backend publicado: https://en-que-se-fue-backend.onrender.com
 - Repositorio GitHub: https://github.com/Lean501/en-que-se-fue
 
-## Stack Tecnológico
+## Stack TecnolÃ³gico
 
 ### Frontend
 
@@ -26,7 +26,7 @@ También incluye una sección de análisis inteligente. En entorno local puede u
 - CSS
 - RxJS
 - Netlify para despliegue web
-- LocalStorage para sesión y preferencias visuales
+- LocalStorage para sesiÃ³n y preferencias visuales
 
 ### Backend
 
@@ -45,16 +45,16 @@ También incluye una sección de análisis inteligente. En entorno local puede u
 ### Base de Datos
 
 - PostgreSQL
-- Neon PostgreSQL para producción
+- Neon PostgreSQL para producciÃ³n
 - Script SQL incluido en el proyecto para crear las tablas
 
 ### Inteligencia Artificial
 
 - Ollama local opcional
 - Modelo configurable desde `appsettings.json`
-- Análisis local automático cuando Ollama no está disponible
+- AnÃ¡lisis local automÃ¡tico cuando Ollama no estÃ¡ disponible
 
-## Instalación y Ejecución Local
+## InstalaciÃ³n y EjecuciÃ³n Local
 
 ### Requisitos Previos
 
@@ -65,9 +65,9 @@ Antes de ejecutar el proyecto, es necesario tener instalado:
 - .NET 10 SDK
 - PostgreSQL
 - pgAdmin, DBeaver o cualquier cliente compatible con PostgreSQL
-- Ollama, opcional para usar el análisis inteligente con IA local
+- Ollama, opcional para usar el anÃ¡lisis inteligente con IA local
 
-## Configuración de la Base de Datos
+## ConfiguraciÃ³n de la Base de Datos
 
 ### PostgreSQL local
 
@@ -84,7 +84,7 @@ PaymentManagementDb
 en-que-se-fue-backend/database/postgresql-schema.sql
 ```
 
-4. Revisar la cadena de conexión del backend en `appsettings.json`:
+4. Revisar la cadena de conexiÃ³n del backend en `appsettings.json`:
 
 ```json
 {
@@ -94,11 +94,11 @@ en-que-se-fue-backend/database/postgresql-schema.sql
 }
 ```
 
-Si el usuario o contraseña de PostgreSQL son diferentes, se deben modificar en esa cadena de conexión.
+Si el usuario o contraseÃ±a de PostgreSQL son diferentes, se deben modificar en esa cadena de conexiÃ³n.
 
 ### PostgreSQL online
 
-En producción se usa Neon PostgreSQL. La cadena de conexión no se guarda en GitHub, sino como variable de entorno del backend publicado.
+En producciÃ³n se usa Neon PostgreSQL. La cadena de conexiÃ³n no se guarda en GitHub, sino como variable de entorno del backend publicado.
 
 Variables soportadas por el backend:
 
@@ -108,7 +108,7 @@ NETLIFY_DB_URL
 NETLIFY_DATABASE_URL
 ```
 
-## Ejecución del Backend
+## EjecuciÃ³n del Backend
 
 Desde una terminal, ingresar a la carpeta del backend:
 
@@ -135,7 +135,7 @@ https://localhost:53367
 http://localhost:53368
 ```
 
-## Ejecución del Frontend
+## EjecuciÃ³n del Frontend
 
 Desde otra terminal, ingresar a la carpeta del frontend:
 
@@ -149,21 +149,21 @@ Instalar las dependencias:
 npm install
 ```
 
-Ejecutar la aplicación:
+Ejecutar la aplicaciÃ³n:
 
 ```bash
 npm start
 ```
 
-La aplicación queda disponible en:
+La aplicaciÃ³n queda disponible en:
 
 ```text
 http://localhost:4200
 ```
 
-## Configuración Opcional de Ollama
+## ConfiguraciÃ³n Opcional de Ollama
 
-Ollama se utiliza únicamente como IA local. Para usarlo:
+Ollama se utiliza Ãºnicamente como IA local. Para usarlo:
 
 1. Instalar Ollama.
 2. Descargar un modelo local, por ejemplo:
@@ -172,13 +172,13 @@ Ollama se utiliza únicamente como IA local. Para usarlo:
 ollama pull gemma4
 ```
 
-3. Verificar que Ollama esté ejecutándose:
+3. Verificar que Ollama estÃ© ejecutÃ¡ndose:
 
 ```bash
 ollama list
 ```
 
-4. Revisar la configuración del backend en `appsettings.json`:
+4. Revisar la configuraciÃ³n del backend en `appsettings.json`:
 
 ```json
 {
@@ -191,15 +191,15 @@ ollama list
 }
 ```
 
-En producción web gratuita no se ejecuta Ollama en el servidor. Si Ollama no está disponible, el backend devuelve un análisis local de respaldo y la aplicación continúa funcionando.
+En producciÃ³n web gratuita no se ejecuta Ollama en el servidor. Si Ollama no estÃ¡ disponible, el backend devuelve un anÃ¡lisis local de respaldo y la aplicaciÃ³n continÃºa funcionando.
 
 ## Despliegue
 
 ### Frontend
 
-El frontend está desplegado en Netlify.
+El frontend estÃ¡ desplegado en Netlify.
 
-Configuración de build:
+ConfiguraciÃ³n de build:
 
 ```text
 Base directory: en-que-se-fue-front
@@ -207,13 +207,13 @@ Build command: npm run build
 Publish directory: dist/en-que-se-fue/browser
 ```
 
-La configuración también está definida en `netlify.toml`.
+La configuraciÃ³n tambiÃ©n estÃ¡ definida en `netlify.toml`.
 
 ### Backend
 
-El backend está desplegado en Render como servicio Docker.
+El backend estÃ¡ desplegado en Render como servicio Docker.
 
-Configuración principal:
+ConfiguraciÃ³n principal:
 
 ```text
 Root directory: en-que-se-fue-backend
@@ -236,7 +236,7 @@ https://enquesefue.netlify.app
 
 ### Base de Datos
 
-La base de datos de producción está alojada en Neon PostgreSQL. Las tablas se crean ejecutando el script:
+La base de datos de producciÃ³n estÃ¡ alojada en Neon PostgreSQL. Las tablas se crean ejecutando el script:
 
 ```text
 en-que-se-fue-backend/database/postgresql-schema.sql
@@ -247,133 +247,133 @@ en-que-se-fue-backend/database/postgresql-schema.sql
 ```text
 payment-management/
 |
-├── en-que-se-fue-backend/
-|   ├── Controllers/
-|   ├── PaymentManagement.Business/
-|   |   ├── Businesses/
-|   |   ├── DTOs/
-|   |   └── Interfaces/
-|   ├── PaymentManagement.Repository/
-|   |   ├── Data/
-|   |   ├── Interfaces/
-|   |   ├── Models/
-|   |   └── Repositories/
-|   ├── database/
-|   |   └── postgresql-schema.sql
-|   ├── Dockerfile
-|   ├── Program.cs
-|   ├── appsettings.json
-|   └── PaymentManagement.sln
+â”œâ”€â”€ en-que-se-fue-backend/
+|   â”œâ”€â”€ Controllers/
+|   â”œâ”€â”€ PaymentManagement.Business/
+|   |   â”œâ”€â”€ Businesses/
+|   |   â”œâ”€â”€ DTOs/
+|   |   â””â”€â”€ Interfaces/
+|   â”œâ”€â”€ PaymentManagement.Repository/
+|   |   â”œâ”€â”€ Data/
+|   |   â”œâ”€â”€ Interfaces/
+|   |   â”œâ”€â”€ Models/
+|   |   â””â”€â”€ Repositories/
+|   â”œâ”€â”€ database/
+|   |   â””â”€â”€ postgresql-schema.sql
+|   â”œâ”€â”€ Dockerfile
+|   â”œâ”€â”€ Program.cs
+|   â”œâ”€â”€ appsettings.json
+|   â””â”€â”€ PaymentManagement.sln
 |
-├── en-que-se-fue-front/
-|   ├── src/
-|   |   ├── app/
-|   |   |   ├── core/
-|   |   |   ├── features/
-|   |   |   └── layout/
-|   |   ├── assets/
-|   |   └── environments/
-|   ├── angular.json
-|   ├── package.json
-|   └── tsconfig.json
+â”œâ”€â”€ en-que-se-fue-front/
+|   â”œâ”€â”€ src/
+|   |   â”œâ”€â”€ app/
+|   |   |   â”œâ”€â”€ core/
+|   |   |   â”œâ”€â”€ features/
+|   |   |   â””â”€â”€ layout/
+|   |   â”œâ”€â”€ assets/
+|   |   â””â”€â”€ environments/
+|   â”œâ”€â”€ angular.json
+|   â”œâ”€â”€ package.json
+|   â””â”€â”€ tsconfig.json
 |
-├── netlify.toml
-├── .gitignore
-└── README.md
+â”œâ”€â”€ netlify.toml
+â”œâ”€â”€ .gitignore
+â””â”€â”€ README.md
 ```
 
 ## Funcionalidades Principales
 
-### Autenticación
+### AutenticaciÃ³n
 
 - Registro de usuarios.
-- Inicio de sesión.
-- Cierre de sesión.
-- Edición de perfil.
-- Separación de datos por usuario.
+- Inicio de sesiÃ³n.
+- Cierre de sesiÃ³n.
+- EdiciÃ³n de perfil.
+- SeparaciÃ³n de datos por usuario.
 
 ### Dashboard
 
 - Total gastado del mes.
-- Gasto más alto.
-- Categoría principal.
+- Gasto mÃ¡s alto.
+- CategorÃ­a principal.
 - Presupuesto restante.
-- Gráfico de torta por categoría.
-- Línea de evolución mensual.
-- Barras por método de pago.
-- Comparación entre gastos fijos y variables.
-- Últimos gastos registrados.
+- GrÃ¡fico de torta por categorÃ­a.
+- LÃ­nea de evoluciÃ³n mensual.
+- Barras por mÃ©todo de pago.
+- ComparaciÃ³n entre gastos fijos y variables.
+- Ãšltimos gastos registrados.
 - Campana de notificaciones.
-- Análisis inteligente del período.
+- AnÃ¡lisis inteligente del perÃ­odo.
 
 ### Gastos
 
 - Crear, editar y eliminar gastos.
-- Registrar descripción, monto, fecha, categoría, método de pago y notas.
+- Registrar descripciÃ³n, monto, fecha, categorÃ­a, mÃ©todo de pago y notas.
 - Vista en lista.
 - Vista en calendario.
-- Ordenamiento por descripción, categoría, método, tipo, fecha y monto.
-- Filtro por categoría.
-- Búsqueda por descripción.
-- Botón para restablecer ordenamientos.
+- Ordenamiento por descripciÃ³n, categorÃ­a, mÃ©todo, tipo, fecha y monto.
+- Filtro por categorÃ­a.
+- BÃºsqueda por descripciÃ³n.
+- BotÃ³n para restablecer ordenamientos.
 
-### Categorías
+### CategorÃ­as
 
-- Crear, editar y eliminar categorías.
+- Crear, editar y eliminar categorÃ­as.
 - Asignar colores personalizados.
 - Guardar colores creados para volver a utilizarlos.
-- Agregar descripción opcional.
-- Ver estadísticas de uso por categoría.
+- Agregar descripciÃ³n opcional.
+- Ver estadÃ­sticas de uso por categorÃ­a.
 
 ### Presupuestos
 
-- Cargar múltiples presupuestos dentro de un mismo mes.
+- Cargar mÃºltiples presupuestos dentro de un mismo mes.
 - Registrar origen de los fondos.
 - Editar y eliminar presupuestos.
 - Visualizar total presupuestado, total gastado y presupuesto restante.
 - Filtrar presupuestos por mes o ver todos.
 
-### Planificación
+### PlanificaciÃ³n
 
 - Definir meta de ahorro mensual.
-- Crear límites por categoría.
+- Crear lÃ­mites por categorÃ­a.
 - Crear alertas personalizadas.
 - Administrar gastos recurrentes.
 - Crear gastos recurrentes para el mes seleccionado.
-- Seleccionar mes y año de planificación.
+- Seleccionar mes y aÃ±o de planificaciÃ³n.
 
-### Análisis Inteligente
+### AnÃ¡lisis Inteligente
 
 - Generar un resumen del estado financiero mensual.
 - Obtener recomendaciones de mejora.
 - Utilizar Ollama de forma local.
-- Mantener un resumen local si la IA no está disponible.
+- Mantener un resumen local si la IA no estÃ¡ disponible.
 
 ### Modo Oscuro
 
-- La aplicación cuenta con modo claro y modo oscuro.
+- La aplicaciÃ³n cuenta con modo claro y modo oscuro.
 - El login y el registro permanecen siempre en modo claro.
-- Al cerrar sesión, el sistema vuelve al modo claro por defecto.
+- Al cerrar sesiÃ³n, el sistema vuelve al modo claro por defecto.
 
-## Usuario y Contraseña de Prueba
+## Usuario y ContraseÃ±a de Prueba
 
 El proyecto permite crear usuarios desde la pantalla de registro.
 
 Usuario de prueba sugerido:
 
 ```text
-Email: leandro@test.com
-Contraseña: 123456
+Email: enQueSeFue@test.com
+ContraseÃ±a: 123456
 ```
 
-Si el usuario no existe en la base de datos, puede crearse desde la opción `Crear cuenta` en la pantalla de login.
+Si el usuario no existe en la base de datos, puede crearse desde la opciÃ³n `Crear cuenta` en la pantalla de login.
 
 ## Notas Importantes
 
-- El backend debe estar ejecutándose antes de usar el frontend en local.
+- El backend debe estar ejecutÃ¡ndose antes de usar el frontend en local.
 - La base de datos PostgreSQL debe estar creada previamente.
-- Las credenciales de producción no deben subirse a GitHub.
-- Ollama es opcional y está pensado para entorno local.
-- En producción web gratuita, el análisis inteligente utiliza el fallback local del backend si Ollama no está disponible.
+- Las credenciales de producciÃ³n no deben subirse a GitHub.
+- Ollama es opcional y estÃ¡ pensado para entorno local.
+- En producciÃ³n web gratuita, el anÃ¡lisis inteligente utiliza el fallback local del backend si Ollama no estÃ¡ disponible.
 - Render puede tardar unos segundos en responder la primera vez porque el servicio gratuito puede quedar en reposo.
 - Las carpetas `bin`, `obj`, `dist`, `.angular`, `node_modules` y `artifacts` no deben subirse a GitHub.
