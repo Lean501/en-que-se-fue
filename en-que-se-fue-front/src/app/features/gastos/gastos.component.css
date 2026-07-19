@@ -175,7 +175,12 @@
 }
 
 .table-wrap {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+.table-wrap .table {
+  min-width: 1060px;
 }
 .calendar-panel {
   padding: 18px;
@@ -475,6 +480,35 @@
 }
 
 @media (max-width: 640px) {
+  .head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .head .btn {
+    width: 100%;
+  }
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .toolbar .input,
+  .select,
+  .period-picker,
+  .total-chip {
+    width: 100%;
+    max-width: none;
+  }
+  .view-tools {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .view-switch,
+  .reset-order {
+    width: 100%;
+  }
+  .view-switch button {
+    flex: 1;
+  }
   .grid-2 {
     grid-template-columns: 1fr;
   }
@@ -503,6 +537,9 @@
   .table thead {
     display: none;
   }
+  .table-wrap .table {
+    min-width: 0;
+  }
   .table,
   .table tbody,
   .table tr,
@@ -518,6 +555,7 @@
     border: none;
     padding: 6px 16px;
     display: flex;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
   }
