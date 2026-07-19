@@ -25,3 +25,4 @@ appsettings.Development.json
 Thumbs.db
 .vscode/
 .idea/
+appsettings.Local.json

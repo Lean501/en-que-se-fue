@@ -6,7 +6,8 @@
     "dev": "ng serve --host 0.0.0.0 --port 4200 --disable-host-check",
     "start": "ng serve --host localhost --port 4200 --open",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development"
+    "watch": "ng build --watch --configuration development",
+    "start:local": "ng serve --configuration local --host localhost --port 4200 --open"
   },
   "dependencies": {
     "@angular/animations": "^18.2.0",

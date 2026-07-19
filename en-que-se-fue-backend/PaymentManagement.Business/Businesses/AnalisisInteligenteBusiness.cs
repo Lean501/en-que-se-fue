@@ -76,7 +76,7 @@ public class AnalisisInteligenteBusiness : IAnalisisInteligenteBusiness
 
         try
         {
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(25));
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
             var response = await _httpClient.PostAsJsonAsync(
                 $"{ollamaUrl}/api/generate",
                 new
@@ -87,7 +87,7 @@ public class AnalisisInteligenteBusiness : IAnalisisInteligenteBusiness
                     options = new
                     {
                         temperature = 0.3,
-                        num_predict = 420
+                        num_predict = 700
                     }
                 },
                 cts.Token);
@@ -211,7 +211,7 @@ public class AnalisisInteligenteBusiness : IAnalisisInteligenteBusiness
         Sos un asistente financiero para una app de gastos personales.
         Responde en español argentino, claro, útil y un poco descriptivo.
         No uses simbolos de moneda. No inventes datos. No des consejos legales ni financieros profesionales.
-        Devolve un unico parrafo de 6 a 8 frases cortas.
+        Devolve un unico parrafo de 8 a 10 frases cortas, con observaciones concretas y faciles de accionar.
         Menciona el peso de la categoria principal, la diferencia entre gastos fijos y variables, el presupuesto restante y una accion concreta para mejorar el mes.
 
         Datos del periodo {contexto.Mes}/{contexto.Anio}:

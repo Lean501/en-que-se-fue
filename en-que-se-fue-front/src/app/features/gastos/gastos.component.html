@@ -157,7 +157,7 @@
 
 <!-- Modal formulario -->
 @if (modalAbierto()) {
-  <div class="overlay" (click)="cerrarModal()">
+  <div class="overlay">
     <div class="modal card" (click)="$event.stopPropagation()">
       <h2 class="modal-title">{{ editandoId() ? 'Editar gasto' : 'Nuevo gasto' }}</h2>
 
